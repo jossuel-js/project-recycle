@@ -1,0 +1,64 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %} Editar Anúncio {% endblock %}
+{% set current_page = 'edit-anuncio' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Editar Anúncio</h3>
+                </div>
+                <div class="card-body p-4">
+                    {% if success %}
+                        <div class="alert alert-success" role="alert">
+                            {{ success }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                    
+                    <form action="/edit-anuncio/{{ anuncio.id }}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="assunto" class="form-label">Assunto:</label>
+                            <input type="text" class="form-control" id="assunto" name="assunto" value="{{ anuncio.assunto }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição:</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" required>{{ anuncio.descricao }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="preco" class="form-label">Preço:</label>
+                            <input type="text" class="form-control" id="preco" name="preco" value="{{ anuncio.preco }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imagem" class="form-label">Imagem Atual:</label>
+                            <div class="mb-3">
+            {% if anuncio.imagem %}
+                <img src="{{ anuncio.imagem }}" class="img-fluid rounded shadow-sm" alt="Imagem do anúncio">
+            {% else %}
+                <img src="https://via.placeholder.com/300x200" class="img-fluid rounded shadow-sm" alt="Imagem do anúncio">
+            {% endif %}
+                            <label for="imagem" class="form-label">Alterar Imagem:</label>
+                            <input type="file" class="form-control" id="imagem" name="imagem">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Atualizar Anúncio</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

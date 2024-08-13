@@ -1,0 +1,47 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %} Criar Anúncio {% endblock %}
+{% set current_page = 'create-anuncio' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Criar Novo Anúncio</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/create-anuncio" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="assunto" class="form-label">Assunto</label>
+                            <input type="text" class="form-control" id="assunto" name="assunto" placeholder="Digite o assunto do anúncio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" placeholder="Descreva o anúncio em detalhes" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="preco" class="form-label">Preço</label>
+                            <input type="text" class="form-control" id="preco" name="preco" placeholder="Informe o valor do produto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imagem" class="form-label">Imagem</label>
+                            <input type="file" class="form-control" id="imagem" name="imagem">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Criar Anúncio</button>
+                        </div>
+                    </form>
+
+                    {% if success is defined %}
+                        <div class="alert alert-success mt-4" role="alert">
+                            {{ success }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

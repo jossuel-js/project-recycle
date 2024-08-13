@@ -1,0 +1,107 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %}{{ user.nome }}{% endblock %}
+
+{% block content %}
+<section style="background-color: #eee;">
+  <div class="container py-5">
+    <!-- Exibição de mensagens de erro em popup/modal -->
+    {% if session.error %}
+      <!-- Modal de Erro -->
+      <div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Erro</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>{{ session.error }}</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+              class="rounded-circle img-fluid" style="width: 150px;">
+            <h5 class="my-3">{{ user.nome }}</h5>
+            <p class="text-muted mb-1">{{ user.role }}</p>
+            <p class="text-muted mb-4">{{ user.location }}</p>
+            <!-- Botão de Editar Perfil - Apenas se for o próprio usuário -->
+            {% if user.id == user_id %}
+                <a href="/edit/profile" class="btn btn-primary">Editar Perfil</a>
+            {% endif %}
+            <!-- Botão de Curtir Perfil -->
+            {% if user.id != user_id %}
+                <form action="/like/profile/{{ user.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-success">Curtir Perfil</button>
+                </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Nome Completo</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ user.nome }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ user.email }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Telefone</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ user.telefone }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Mercado Alvo</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ user.ramo_mercado }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Local de Atuação</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ user.localizacao }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Project Status Section -->
+        <!-- Ajustar para mostrar informações relevantes -->
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

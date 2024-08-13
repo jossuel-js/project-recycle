@@ -1,0 +1,19 @@
+{
+    "name": "jossu/project-recycle",
+    "autoload": {
+        "psr-4": {
+            "Jossu\\ProjectRecycle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "jossuel-js",
+            "email": "84153809+jossuel-js@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.0",
+        "vlucas/phpdotenv": "^5.6",
+        "pecee/simple-router": "^5.4"
+    }
+}

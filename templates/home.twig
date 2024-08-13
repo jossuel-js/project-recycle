@@ -1,0 +1,177 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<header class="py-5 bg-light border-bottom mb-4">
+    <div class="container">
+        <div class="text-center my-5">
+            <h1 class="fw-bolder">Bem-vindo ao Recycle</h1>
+            <p class="lead mt-3 mb-4">Plataforma dedicada a conectar compradores e vendedores de resíduos recicláveis e produtos sustentáveis.</p>
+            <p class="lead mb-4">Facilitamos a negociação e o comércio de materiais recicláveis, promovendo a sustentabilidade e a economia circular.</p>
+            <p class="lead mb-0">Observação: A Recycle atua apenas como intermediária e não se responsabiliza pelas transações realizadas entre os usuários.</p>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Featured announcements -->
+    <h2 class="fw-bolder text-center mb-4">Anúncios em Destaque</h2>
+    <div class="row">
+        {% if announcements is not empty %}
+            {% for announcement in announcements %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card-container">
+                        <a href="#!" class="hero-image-container">
+                            {% if announcement.imagem %}
+                                <img class="hero-image" src="data:image/png;base64,{{ announcement.imagem }}" alt="Imagem do anúncio"/>
+                            {% else %}
+                                <img class="hero-image" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Imagem padrão"/>
+                            {% endif %}
+                        </a>
+                        <div class="main-content">
+                            <h3><a href="#">{{ announcement.assunto }}</a></h3>
+                            <p>{{ announcement.descricao }}</p>
+                            <div class="flex-row">
+                                <div class="button-container">
+                                    <form method="POST" action="/like-announcement/{{ announcement.id }}" class="like-form">
+                                        <button type="submit" class="btn btn-outline-primary">
+                                            {% if announcement.liked_by_user %}
+                                                Descurtir
+                                            {% else %}
+                                                Curtir
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="/report-announcement/{{ announcement.id }}" class="report-form">
+                                        <button type="submit" class="btn btn-outline-danger">Denunciar</button>
+                                    </form>
+                                    <span class="like-count">{{ announcement.likes_count }} Curtidas</span>
+                                </div>
+                            </div>
+                            <a class="btn btn-primary mt-3" href="/profile/{{ announcement.user_id }}" style="display:flex;">Visitar perfil do anunciante →</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center">Não há anúncios em destaque no momento.</p>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center my-5">
+            <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ current_page - 1 }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for page in 1..total_pages %}
+                <li class="page-item {% if page == current_page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+            <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ current_page + 1 }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+
+img {
+    width: 100%;
+    border-radius: 15px;
+    
+}
+
+.card-container {
+    width: 100%;
+    max-width: 450px;
+    height: 300px;
+    margin: 3em auto;
+    background-color: var(--var-card-dark);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hero-image-container {
+    position: relative;
+    display: block;
+}
+
+.hero-image {
+    border-radius: 15px;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.main-content {
+    padding: 1em 0;
+}
+
+h3 {
+    font: var(--var-small-heading);
+    color: var(--var-lightest);
+}
+
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.button-container {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+}
+
+.like-form, .report-form {
+    display: inline;
+}
+
+.btn {
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.btn-outline-primary {
+    border-color: var(--var-soft-blue);
+    color: var(--var-soft-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--var-soft-blue);
+    color: var(--var-lightest);
+}
+
+.btn-outline-danger {
+    border-color: var(--var-cyan);
+    color: var(--var-cyan);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--var-cyan);
+    color: var(--var-lightest);
+}
+
+.like-count {
+    font-size: 0.9em;
+    color: var(--var-lightest);
+}
+
+
+</style>
+{% endblock %}
