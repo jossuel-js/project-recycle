@@ -1,5 +1,5 @@
 # project-recycle
-#REQUERIMENTOS
-COMPOSER
+REQUERIMENTOS
+COMPOSER/
 XAMP(recomendado por já configurar o php)
 
