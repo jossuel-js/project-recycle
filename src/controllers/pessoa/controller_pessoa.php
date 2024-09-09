@@ -5,28 +5,40 @@ function getUser() {
     if (!checkLogin()) {
         return null;
     }
-    $stmt = $pdo->prepare('SELECT id, nome, email, localizacao, ramo_mercado, descricao_adicional, telefone FROM recycle.tb_users WHERE email = :email');
+    
+    $stmt = $pdo->prepare('SELECT id, nome, email, localizacao, ramo_mercado, descricao_adicional, telefone, foto FROM recycle.tb_users WHERE email = :email');
     $stmt->execute(['email' => $_SESSION['user_email']]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && $user['foto']) {
+        // Converte o recurso de fluxo em uma string e depois para base64
+        $fotoData = stream_get_contents($user['foto']);
+        $user['foto'] = base64_encode($fotoData);
+    }
+
+    return $user;
 }
-function  findUserById($id, $pdo) {
+
+function findUserById($id, $pdo) {
     try {
-        $stmt = $pdo->prepare('SELECT id, nome, email, telefone,localizacao,ramo_mercado FROM recycle.tb_users WHERE id = :id');
+        $stmt = $pdo->prepare('SELECT id, nome, email, telefone, localizacao, ramo_mercado, descricao_adicional, foto FROM recycle.tb_users WHERE id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user) {
-            return null; 
+        if ($user && $user['foto']) {
+            // Converte o recurso de fluxo em uma string e depois para base64
+            $fotoData = stream_get_contents($user['foto']);
+            $user['foto'] = base64_encode($fotoData);
         }
 
         return $user;
     } catch (PDOException $e) {
-        
         error_log($e->getMessage());
-        return null; 
+        return null;
     }
 }
+
 
 
 function updateUserById($id, $nome, $telefone) {
@@ -86,7 +98,54 @@ function likeProfile($profileId) {
     }
 
     // Redirecionar de volta ao perfil
-    header('Location: /profile/' . $profileId);
+    header('Location: /perfil/' . $profileId);
     exit();
+}
+
+function hasUserLikedProfile($currentUserId, $profileUserId, $pdo) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) AS has_liked
+            FROM recycle.profile_likes
+            WHERE user_id = :current_user_id AND liked_user_id = :profile_user_id
+        ");
+        $stmt->bindParam(':current_user_id', $currentUserId, PDO::PARAM_INT);
+        $stmt->bindParam(':profile_user_id', $profileUserId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['has_liked'] > 0;
+    } catch (PDOException $e) {
+        error_log('Error in hasUserLikedProfile: ' . $e->getMessage());
+        return false;
+    }
+}
+
+
+function findLikedAnnouncements($userId, $pdo) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT a.id, a.assunto, a.descricao, a.preco, a.data_criacao, a.imagem
+            FROM recycle.tb_announcement_likes al
+            JOIN recycle.tb_anuncios a ON al.announcement_id = a.id
+            WHERE al.user_id = :user_id AND ativo <> false
+        ");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $announcements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Converte imagens de anúncios para base64
+        foreach ($announcements as &$announcement) {
+            if ($announcement['imagem']) {
+                // Converte o conteúdo binário da imagem para base64
+                $imageData = stream_get_contents($announcement['imagem']);
+                $announcement['imagem'] = base64_encode($imageData);
+            }
+        }
+
+        return $announcements;
+    } catch (PDOException $e) {
+        error_log('Error fetching liked announcements: ' . $e->getMessage());
+        return [];
+    }
 }
 

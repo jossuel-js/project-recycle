@@ -1,107 +1,225 @@
 {% extends 'components/navbar.twig' %}
-
-{% block title %}{{ user.nome }}{% endblock %}
-
 {% block content %}
-<section style="background-color: #eee;">
-  <div class="container py-5">
-    <!-- Exibição de mensagens de erro em popup/modal -->
-    {% if session.error %}
-      <!-- Modal de Erro -->
-      <div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Erro</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <title>Perfil</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Fundo branco */
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .profile-img img {
+            width: 300px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10%;
+            border: 3px solid black; /* Borda ao redor da imagem */
+        }
+        .profile-head {
+            background-color: #f8f9fa; /* Cor de fundo mais clara para a área do perfil */
+            padding: 15px;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .profile-head h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        .profile-head p {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .profile-edit-btn {
+            background-color: #0062cc;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 15px;
+        }
+        .profile-edit-btn:hover {
+            background-color: #004080;
+        }
+        .nav-tabs {
+            margin-bottom: 15px;
+        }
+        .nav-tabs .nav-link {
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem 0.5rem 0 0;
+            background: #e9ecef;
+            color: #495057;
+        }
+        .nav-tabs .nav-link.active {
+            background: #ffffff;
+            color: #0062cc;
+            border-bottom: 2px solid #0062cc;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 1.25rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .card-text {
+            font-size: 1rem;
+            color: #495057;
+        }
+        .text-muted {
+            color: #6c757d !important;
+        }
+        .profile-tab {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .profile-actions {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container emp-profile">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    {% if user.foto %}
+                        <img class="card-img-top" src="data:image/jpeg;base64,{{ user.foto }}" alt="Imagem do perfil" />
+                    {% else %}
+                        <img class="card-img-top" src="https://dummyimage.com/300x150/ccc/ffffff.jpg&text=Sem+Imagem" alt="Imagem vazia" />
+                    {% endif %}
+                </div>
             </div>
-            <div class="modal-body">
-              <p>{{ session.error }}</p>
+            <div class="col-md-8">
+                <div class="profile-head">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>{{ user.nome }}</h5>
+                            <p class="proile-rating">CLASSIFICAÇÃO: <span>{{ total_likes }} Likes</span></p>
+                        </div>
+                        <div>
+                            {% if user.id == user_id %}
+                                <a href="/editar/perfil" style="text-wrap: nowrap;" class="profile-edit-btn">Editar Perfil</a>
+                            {% else %}
+                                {% if user_has_liked %}
+                                    <form action="/unlike/profile/{{ user.id }}" method="POST">
+                                        <button type="submit" class="profile-edit-btn">Descurtir Perfil</button>
+                                    </form>
+                                {% else %}
+                                    <form action="/like/profile/{{ user.id }}" method="POST">
+                                        <button type="submit" class="profile-edit-btn">Curtir Perfil</button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Sobre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="announcements-tab" data-toggle="tab" href="#announcements" role="tab" aria-controls="announcements" aria-selected="false">Anúncios</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
-          </div>
         </div>
-      </div>
-    {% endif %}
 
-    <div class="row">
-      <div class="col-lg-4">
-        <div class="card mb-4">
-          <div class="card-body text-center">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
-              class="rounded-circle img-fluid" style="width: 150px;">
-            <h5 class="my-3">{{ user.nome }}</h5>
-            <p class="text-muted mb-1">{{ user.role }}</p>
-            <p class="text-muted mb-4">{{ user.location }}</p>
-            <!-- Botão de Editar Perfil - Apenas se for o próprio usuário -->
-            {% if user.id == user_id %}
-                <a href="/edit/profile" class="btn btn-primary">Editar Perfil</a>
-            {% endif %}
-            <!-- Botão de Curtir Perfil -->
-            {% if user.id != user_id %}
-                <form action="/like/profile/{{ user.id }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-success">Curtir Perfil</button>
-                </form>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+        <div class="profile-tab">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Telefone</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ user.telefone }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Ramo de Atuação</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ user.ramo_mercado }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Informações Complementares</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{ user.descricao_adicional }}</p>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Nome Completo</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ user.nome }}</p>
-              </div>
+                <div class="tab-pane fade" id="announcements" role="tabpanel" aria-labelledby="announcements-tab">
+                    <div class="row">
+                        {% for announcement in announcements %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                {% if announcement.imagem %}
+                                    <img class="card-img-top" src="data:image/png;base64,{{ announcement.imagem }}" alt="Imagem do anúncio"/>
+                                {% else %}
+                                    <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Imagem padrão"/>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ announcement.assunto }}</h5>
+                                    <p class="card-text">{{ announcement.descricao }}</p>
+                                    <p class="card-text"><small class="text-muted">Postado em {{ announcement.data_criacao | date('d/m/Y') }}</small></p>
+                                    <p class="card-text"><strong>Preço: </strong> R$ {{ announcement.preco }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-md-12">
+                            <p>Não há anúncios para exibir.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Email</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ user.email }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Telefone</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ user.telefone }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Mercado Alvo</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ user.ramo_mercado }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Local de Atuação</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ user.localizacao }}</p>
-              </div>
-            </div>
-          </div>
         </div>
-        <!-- Project Status Section -->
-        <!-- Ajustar para mostrar informações relevantes -->
-      </div>
     </div>
-  </div>
-</section>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+</body>
+</html>
 {% endblock %}

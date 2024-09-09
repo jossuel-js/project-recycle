@@ -3,26 +3,19 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-<header class="py-5 bg-light border-bottom mb-4">
-    <div class="container">
-        <div class="text-center my-5">
-            <h1 class="fw-bolder">Bem-vindo ao Recycle</h1>
-            <p class="lead mt-3 mb-4">Plataforma dedicada a conectar compradores e vendedores de resíduos recicláveis e produtos sustentáveis.</p>
-            <p class="lead mb-4">Facilitamos a negociação e o comércio de materiais recicláveis, promovendo a sustentabilidade e a economia circular.</p>
-            <p class="lead mb-0">Observação: A Recycle atua apenas como intermediária e não se responsabiliza pelas transações realizadas entre os usuários.</p>
-        </div>
-    </div>
-</header>
-
 <div class="container">
-    <!-- Featured announcements -->
     <h2 class="fw-bolder text-center mb-4">Anúncios em Destaque</h2>
+    <form method="GET" action="/home" class="search-form mb-4">
+        <input type="text" name="search" placeholder="Buscar anúncios" value="{{ search_term ?? '' }}" class="form-control me-2">
+        
+    </form>
+
     <div class="row">
         {% if announcements is not empty %}
             {% for announcement in announcements %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card-container">
-                        <a href="#!" class="hero-image-container">
+                        <a href="#!" class="hero-image-container" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="data:image/png;base64,{{ announcement.imagem }}">
                             {% if announcement.imagem %}
                                 <img class="hero-image" src="data:image/png;base64,{{ announcement.imagem }}" alt="Imagem do anúncio"/>
                             {% else %}
@@ -30,26 +23,37 @@
                             {% endif %}
                         </a>
                         <div class="main-content">
-                            <h3><a href="#">{{ announcement.assunto }}</a></h3>
+                            <h3>{{ announcement.assunto }}</h3>
                             <p>{{ announcement.descricao }}</p>
-                            <div class="flex-row">
-                                <div class="button-container">
-                                    <form method="POST" action="/like-announcement/{{ announcement.id }}" class="like-form">
-                                        <button type="submit" class="btn btn-outline-primary">
-                                            {% if announcement.liked_by_user %}
-                                                Descurtir
-                                            {% else %}
-                                                Curtir
-                                            {% endif %}
-                                        </button>
-                                    </form>
-                                    <form method="POST" action="/report-announcement/{{ announcement.id }}" class="report-form">
-                                        <button type="submit" class="btn btn-outline-danger">Denunciar</button>
-                                    </form>
-                                    <span class="like-count">{{ announcement.likes_count }} Curtidas</span>
-                                </div>
+                            <p><strong>Anunciante:</strong> {{ announcement.nome }}<br>
+                            <strong>Telefone:</strong> {{ announcement.telefone }}</p>
+                            <strong>Preço:</strong> {{ announcement.preco }}</p>
+
+                            <!-- Número de Curtidas -->
+                            <div class="like-section">
+                                <span class="like-count">{{ announcement.likes_count }} Curtidas</span>
                             </div>
-                            <a class="btn btn-primary mt-3" href="/profile/{{ announcement.user_id }}" style="display:flex;">Visitar perfil do anunciante →</a>
+
+                            <div class="button-group">
+                                <form method="POST" action="/like-announcement/{{ announcement.id }}" class="like-form">
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="fa fa-thumbs-up"></i> 
+                                        {% if announcement.user_liked %}
+                                            Descurtir
+                                        {% else %}
+                                            Curtir
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                
+                                <a href="/anuncio/{{ announcement.id }}/denuncia/" class="btn btn-outline-danger">Denunciar</a>
+                            </div>
+                            
+                            <!-- Botões de Visitar Perfil e Verificar Denúncias -->
+                            <div class="profile-buttons">
+                                <a class="btn btn-primary" href="/perfil/{{ announcement.user_id }}">Visitar perfil do anunciante →</a>
+                                <a class="btn btn-primary mt-2" href="/anuncio/{{ announcement.id }}/denuncias">Verificar Denúncias →</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -59,9 +63,13 @@
         {% endif %}
     </div>
 
-    <!-- Pagination -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center my-5">
+            <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">Primeira</span>
+                </a>
+            </li>
             <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
                 <a class="page-link" href="?page={{ current_page - 1 }}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
@@ -77,30 +85,62 @@
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
+            <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ total_pages }}" aria-label="Last">
+                    <span aria-hidden="true">Última</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </div>
 
+<!-- Modal para exibir a imagem -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Anuncio:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" class="img-fluid" alt="Imagem do anúncio">
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+/* Estilo do Template */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
 
 img {
     width: 100%;
     border-radius: 15px;
-    
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-form .form-control {
+    flex: 1;
+    margin-right: 0.5em;
 }
 
 .card-container {
     width: 100%;
     max-width: 450px;
-    height: 300px;
-    margin: 3em auto;
-    background-color: var(--var-card-dark);
+    margin: 0 auto;
+    background-color: #f8f9fa;
     border-radius: 15px;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-height: 400px; /* Adjust this value as needed */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .hero-image-container {
@@ -117,61 +157,112 @@ img {
 
 .main-content {
     padding: 1em 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 h3 {
-    font: var(--var-small-heading);
-    color: var(--var-lightest);
+    font: 600 1.25rem 'Outfit', sans-serif;
+    color: #212529;
+    margin-bottom: 0.5em;
 }
 
-.flex-row {
+p {
+    font: 400 1rem 'Outfit', sans-serif;
+    color: #495057;
+}
+
+.like-section {
+    text-align: left;
+    margin-bottom: 1em;
+}
+
+.like-count {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.button-group {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.5em;
+    margin-top: 1em;
 }
 
-.button-container {
+.button-group .like-form {
+    flex: 1;
+}
+
+.like-form .btn {
     display: flex;
-    gap: 0.5em;
     align-items: center;
-}
-
-.like-form, .report-form {
-    display: inline;
-}
-
-.btn {
-    padding: 0.5em 1em;
+    justify-content: center;
+    width: 100%;
+    font-size: 0.9em;
     border-radius: 5px;
+}
+
+.profile-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 1em;
+}
+
+.profile-buttons .btn {
+    width: 100%;
     font-size: 0.9em;
 }
 
-.btn-outline-primary {
-    border-color: var(--var-soft-blue);
-    color: var(--var-soft-blue);
+.profile-buttons .btn.mt-2 {
+    margin-top: 0.5em;
 }
 
-.btn-outline-primary:hover {
-    background-color: var(--var-soft-blue);
-    color: var(--var-lightest);
+.pagination .page-link {
+    color: #212529;
 }
 
-.btn-outline-danger {
-    border-color: var(--var-cyan);
-    color: var(--var-cyan);
+@media (max-width: 768px) {
+    h3 {
+        font-size: 1.1rem;
+    }
+    p {
+        font-size: 0.9rem;
+    }
+    .like-count {
+        font-size: 0.8rem;
+    }
 }
 
-.btn-outline-danger:hover {
-    background-color: var(--var-cyan);
-    color: var(--var-lightest);
+@media (max-width: 576px) {
+    h3 {
+        font-size: 1rem;
+    }
+    p {
+        font-size: 0.85rem;
+    }
+    .like-count {
+        font-size: 0.75rem;
+    }
 }
-
-.like-count {
-    font-size: 0.9em;
-    color: var(--var-lightest);
-}
-
-
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var imageLinks = document.querySelectorAll('.hero-image-container');
+    var modalImage = document.getElementById('modalImage');
+
+    imageLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            var imageSrc = event.currentTarget.getAttribute('data-image');
+            modalImage.setAttribute('src', imageSrc);
+        });
+    });
+});
+</script>
+
 {% endblock %}

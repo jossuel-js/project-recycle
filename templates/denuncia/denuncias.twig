@@ -1,0 +1,24 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %}Denúncias do Anúncio{% endblock %}
+
+{% block content %}
+<h1>Denúncias para o Anúncio #{{ anuncio_id }}</h1>
+
+{% if denuncias is not empty %}
+    <ul>
+        {% for denuncia in denuncias %}
+            <li>
+                <strong>Título:</strong> {{ denuncia.titulo }}<br>
+                <strong>Descrição:</strong> {{ denuncia.descricao }}<br>
+                <strong>Criado em:</strong> {{ denuncia.criado_em | date("d/m/Y")}}<br>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Não há denúncias registradas para este anúncio.</p>
+{% endif %}
+
+<a href="/home">Voltar para Anúncios</a>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %}Painel Administrativo - Anúncios Denunciados{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Painel Administrativo</h1>
+        <h2 class="mt-4">Anúncios com Denúncias</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID do Anúncio</th>
+                    <th>Assunto da Postagem</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Data de Criação</th>
+                    <th>Titulo Denúncia</th>
+                    <th>Descrição da Denúncia</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for denuncia in denuncias %}
+<tr>
+    <td>{{ denuncia.anuncio_id }}</td>
+    <td>{{ denuncia.assunto }}</td>
+    <td>{{ denuncia.descricao }}</td>
+    <td>{{ denuncia.preco | number_format(2, ',', '.') }}</td>
+    <td>{{ denuncia.data_criacao | date("d/m/Y") }}</td>
+    <td>{{ denuncia.denuncia_titulo }}</td>
+    <td>{{ denuncia.descricao }}</td>
+    <td>
+                            <form action="/admin/excluir-anuncio" method="POST" class="d-inline">
+                            <input type="hidden" name="anuncio_id" value="{{ denuncia.anuncio_id }}">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este anúncio?');">Excluir Anúncio</button>
+                        </form>
+                        <form action="/admin/excluir-denuncia" method="POST" class="d-inline">
+                            <input type="hidden" name="denuncia_id" value="{{ denuncia.denuncia_id }}">
+                            <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Tem certeza que deseja excluir esta denúncia?');">Excluir Denúncia</button>
+                        </form>
+        <!-- Botão para abrir o modal -->
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imagemModal{{ denuncia.anuncio_id }}">
+            Ver Imagem
+        </button>
+
+                    <!-- Modal para exibir a imagem -->
+                    <div class="modal fade" id="imagemModal{{ denuncia.anuncio_id }}" tabindex="-1" aria-labelledby="imagemModalLabel{{ denuncia.anuncio_id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="imagemModalLabel{{ denuncia.anuncio_id }}">Imagem do Anúncio</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% if denuncia.imagem %}
+                                        <img src="data:image/jpeg;base64,{{ denuncia.imagem }}" class="img-fluid" alt="Imagem do Anúncio">
+                                    {% else %}
+                                        <p>Sem imagem disponível.</p>
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Nenhum anúncio denunciado encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

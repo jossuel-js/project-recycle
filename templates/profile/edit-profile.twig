@@ -6,7 +6,7 @@
 <section style="background-color: #eee;">
   <div class="container py-5">
     <h2>Editar Perfil</h2>
-    <form action="/profile_update" method="post">
+    <form action="/profile_update" method="post" enctype="multipart/form-data">
       <!-- Campos do formulário -->
       <div class="mb-3">
         <label for="nome" class="form-label">Nome Completo</label>
@@ -21,14 +21,23 @@
         <input type="text" class="form-control" id="telefone" name="telefone" value="{{ user.telefone }}">
       </div>
       <div class="mb-3">
-        <label for="mobile" class="form-label">Ramo de Atuação no Mercado</label>
+        <label for="ramomercado" class="form-label">Ramo de Atuação no Mercado</label>
         <input type="text" class="form-control" id="ramomercado" name="ramomercado" value="{{ user.ramo_mercado }}">
       </div>
       <div class="mb-3">
-        <label for="address" class="form-label">Endereço</label>
+        <label for="localizacao" class="form-label">Endereço</label>
         <input type="text" class="form-control" id="localizacao" name="localizacao" value="{{ user.localizacao }}">
       </div>
+      <div class="mb-3">
+        <label for="descricao_adicional" class="form-label">Descrição Adicional</label>
+        <textarea class="form-control" id="descricao_adicional" name="descricao_adicional" rows="3">{{ user.descricao_adicional }}</textarea>
+      </div>
+      <div class="mb-3">
+        <label for="foto" class="form-label">Foto do Perfil</label>
+        <input type="file" class="form-control" id="foto" name="foto">
+      </div>
       <button type="submit" class="btn btn-primary">Salvar alterações</button>
+      <a class="btn btn-danger" href="/perfil/{{user.id}}">Voltar para o perfil</a>
     </form>
   </div>
 </section>

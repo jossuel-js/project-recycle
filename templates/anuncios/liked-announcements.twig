@@ -1,0 +1,88 @@
+{% extends 'components/navbar.twig' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <title>Anúncios Curtidos</title>
+    <style>
+        body {
+            background-color: #ffffff; /* Fundo branco */
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 1.25rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .card-text {
+            font-size: 1rem;
+            color: #495057;
+        }
+        .text-muted {
+            color: #6c757d !important;
+        }
+        .like-form {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anúncios Curtidos</h1>
+        <div class="row">
+            {% if announcements is empty %}
+                <p>Você ainda não curtiu nenhum anúncio.</p>
+            {% else %}
+                {% for announcement in announcements %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            {% if announcement.imagem %}
+                                <img class="card-img-top" src="data:image/png;base64,{{ announcement.imagem }}" alt="Imagem do anúncio"/>
+                            {% else %}
+                                <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Imagem padrão"/>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ announcement.assunto }}</h5>
+                                <p class="card-text">{{ announcement.descricao }}</p>
+                                <p class="card-text"><small class="text-muted">Postado em {{ announcement.data_criacao | date('d/m/Y') }}</small></p>
+                                <p class="card-text"><strong>Preço: </strong> R$ {{ announcement.preco }}</p>
+
+                                <!-- Botão de descurtir -->
+                                <form method="POST" action="/like-announcement/{{ announcement.id }}" class="like-form">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="fa fa-thumbs-down"></i> 
+                                        Descurtir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}

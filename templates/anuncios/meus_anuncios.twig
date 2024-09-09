@@ -14,7 +14,7 @@
         <div class="row">
             {% for announcement in announcements %}
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm border-0">
+                    <div class="card h-100 shadow-sm border-0 ">
                         {% if announcement.imagem %}
                             <a href="#!">
                                 <img class="card-img-top" src="data:image/jpeg;base64,{{ announcement.imagem }}" alt="Imagem do anúncio" />
@@ -30,6 +30,15 @@
                             <p class="card-text text-primary fw-bold">Preço: R$ {{ announcement.preco }}</p>
                             <div class="mt-auto">
                                 <a href="/edit-anuncio/{{ announcement.id }}" class="btn btn-warning btn-sm">Editar</a>
+                                                                {% if announcement.ativo %}
+                                    <form action="/ocultar-anuncio/{{ announcement.id }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-secondary btn-sm">Ocultar Anúncio</button>
+                                    </form>
+                                {% else %}
+                                    <form action="/ocultar-anuncio/{{ announcement.id }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-secondary btn-sm">Desocultar Anúncio</button>
+                                    </form>
+                                {% endif %}
                                 <a href="/delete-anuncio/{{ announcement.id }}" class="btn btn-danger btn-sm">Deletar</a>
                             </div>
                         </div>
@@ -42,5 +51,16 @@
             Você não tem anúncios no momento.
         </div>
     {% endif %}
+    <style>
+/* Estilo do Template */
+.card-img-top {
+    width: 100%; /* Faz a imagem ocupar toda a largura disponível */
+    height: auto; /* Ajusta a altura automaticamente para manter a proporção */
+    max-height: 200px; /* Define a altura máxima da imagem */
+    object-fit: cover; /* Faz a imagem cobrir o espaço sem distorcer */
+}
+
+</style>
+
 </div>
 {% endblock %}

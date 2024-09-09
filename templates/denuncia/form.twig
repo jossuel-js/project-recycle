@@ -1,0 +1,28 @@
+{% extends 'components/navbar.twig' %}
+
+{% block title %} Denunciar Anúncio {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="fw-bolder text-center mb-4">Denunciar Anúncio</h2>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="/anuncio/{{ anuncio_id }}/denuncia">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Fazer Denúncia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

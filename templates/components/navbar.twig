@@ -3,42 +3,99 @@
 <head>
     <title>{% block title %} Meu Projeto {% endblock %}</title>
     <!-- Adicionar Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
     <!-- Adicionar FontAwesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM7i5T91g20DeLyk5VQ5Rj6h8ABs59iSi5u1Q5D" crossorigin="anonymous">
-<style>
-</style>
+    <style>
+        .navbar {
+            background-color: #ffe611; /* Cor clara para combinar com o tema de reciclagem */
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover,
+        .navbar-dark .navbar-nav .nav-link:focus {
+            color: rgba(255, 255, 255, 0.75);
+        }
+        .navbar-dark .dropdown-menu .dropdown-item {
+            color: #fff;
+        }
+        .navbar-dark .dropdown-menu .dropdown-item:hover,
+        .navbar-dark .dropdown-menu .dropdown-item:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .navbar-dark .navbar-brand {
+            color: #fff;
+        }
+        .navbar-dark .navbar-brand:hover {
+            color: rgba(255, 255, 255, 0.75);
+        }
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+        .search-form .form-control {
+            border-radius: 0;
+        }
+        .search-form .btn {
+            border-radius: 0;
+        }
+    </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #9bdff7;">
         <div class="container-fluid">
             <a class="navbar-brand" href="/home">
-                 Recycle
-                <img src="https://dev.lemarq.inf.br/scriptcase/devel/conf/grp/SIAFIC/img/bg/recycle_sign_multiple_colours_set-removebg-preview.png" style="height: 30px; width: 30px;">
+                Recycle
+                <img src="https://dev.lemarq.inf.br/scriptcase/devel/conf/grp/SIAFIC/img/bg/recycle_sign_multiple_colours_set-removebg-preview.png" style="height: 30px; width: 30px;" alt="Recycle">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     {% if logged_in %}
+                        {% if isAdmin %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/home">Início</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin-dashboard">Painel Administrativo</a>
+                            </li>
+                                                        <li class="nav-item">
+                                <a class="nav-link" href="/logout">Sair</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/home">Início</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/perfil/{{ user_id }}">Perfil</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/meus-anuncios">Meus anúncios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/curtidas/anuncios">Curtidas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/logout">Sair</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/home">Inicio</a>
+                            <a class="nav-link" href="/login">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/profile/{{ user_id }}">Perfil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/meus-anuncios">Meus anuncios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/logout">Sair</a>
+                            <a class="nav-link" href="/register">Registro</a>
                         </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+    <!-- Navbar -->
 
     <div class="container mt-4">
         {% block content %}
@@ -47,8 +104,5 @@
 
     <!-- Adicionar Bootstrap JS e dependências -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>
