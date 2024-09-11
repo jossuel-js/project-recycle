@@ -31,6 +31,7 @@ function findUserAnnouncements($userId, $pdo) {
         FROM recycle.tb_anuncios a
         JOIN recycle.tb_users u ON a.user_id = u.id
         WHERE a.user_id = :user_id
+        AND ativo <> false
         ORDER BY a.data_criacao DESC
     ");
     $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);

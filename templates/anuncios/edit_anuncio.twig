@@ -24,38 +24,41 @@
                         </div>
                     {% endif %}
                     
-                    <form action="/edit-anuncio/{{ anuncio.id }}" method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="assunto" class="form-label">Assunto:</label>
-                            <input type="text" class="form-control" id="assunto" name="assunto" value="{{ anuncio.assunto }}" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="descricao" class="form-label">Descrição:</label>
-                            <textarea class="form-control" id="descricao" name="descricao" rows="4" required>{{ anuncio.descricao }}</textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="preco" class="form-label">Preço:</label>
-                            <input type="text" class="form-control" id="preco" name="preco" value="{{ anuncio.preco }}" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="imagem" class="form-label">Imagem Atual:</label>
-                            <div class="mb-3">
+<form action="/edit-anuncio/{{ anuncio.id }}" method="post" enctype="multipart/form-data">
+    <!-- Campos de dados do anúncio -->
+    <div class="mb-3">
+        <label for="assunto" class="form-label">Assunto:</label>
+        <input type="text" class="form-control" id="assunto" name="assunto" value="{{ anuncio.assunto }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="descricao" class="form-label">Descrição:</label>
+        <textarea class="form-control" id="descricao" name="descricao" rows="4" required>{{ anuncio.descricao }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="preco" class="form-label">Preço:</label>
+        <input type="text" class="form-control" id="preco" name="preco" value="{{ anuncio.preco }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="imagem" class="form-label">Imagem Atual:</label>
+        <div class="mb-3">
             {% if anuncio.imagem %}
                 <img src="{{ anuncio.imagem }}" class="img-fluid rounded shadow-sm" alt="Imagem do anúncio">
             {% else %}
                 <img src="https://via.placeholder.com/300x200" class="img-fluid rounded shadow-sm" alt="Imagem do anúncio">
             {% endif %}
-                            <label for="imagem" class="form-label">Alterar Imagem:</label>
-                            <input type="file" class="form-control" id="imagem" name="imagem">
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Atualizar Anúncio</button>
-                        </div>
-                    </form>
+        </div>
+        <input type="hidden" name="imagem_atual" value="{{ anuncio.imagem }}">
+        <label for="imagem" class="form-label">Alterar Imagem:</label>
+        <input type="file" class="form-control" id="imagem" name="imagem">
+    </div>
+
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Atualizar Anúncio</button>
+    </div>
+</form>
                 </div>
             </div>
         </div>

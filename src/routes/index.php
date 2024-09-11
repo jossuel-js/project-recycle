@@ -19,6 +19,7 @@ $pdo = conectarBanco();
 
 
 // -------------------------------------------------------- Rotas ----------------------------------------------------------------
+
 SimpleRouter::get('/', function() {
     header('Location: /login');
     exit;
@@ -61,15 +62,30 @@ SimpleRouter::post('/registrar-se', function() use ($twig, $pdo) {
     // bcrypt da senha
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-    $stmt = $pdo->prepare('INSERT INTO recycle.tb_users (email, senha, nome) VALUES (:email, :senha, :nome)');
-    $stmt->execute([
-        'email' => $email,
-        'senha' => $hashedPassword,
-        'nome' => $nome
-    ]);
+    try {
+        $stmt = $pdo->prepare('INSERT INTO recycle.tb_users (email, senha, nome) VALUES (:email, :senha, :nome)');
+        $stmt->execute([
+            'email' => $email,
+            'senha' => $hashedPassword,
+            'nome' => $nome
+        ]);
 
-    echo $twig->render('register.twig', ['success' => 'Usuário registrado com sucesso', 'logged_in' => checkLogin()]);
+        // Se a execução chegar aqui, o registro foi bem-sucedido
+        echo $twig->render('register.twig', ['success' => 'Usuário registrado com sucesso', 'logged_in' => checkLogin()]);
+    } catch (PDOException $e) {
+        // Verifica se a exceção é uma violação de chave única (error code 23000)
+        if ($e->getCode() === '23000') {
+            $errorMessage = 'O e-mail já está em uso. Por favor, escolha outro e-mail.';
+        } else {
+            // Se não for um erro de chave única, exibe uma mensagem genérica
+            $errorMessage = 'Ocorreu um erro ao registrar o usuário. Por favor, tente novamente.';
+        }
+
+        // Renderiza o template com a mensagem de erro
+        echo $twig->render('register.twig', ['error' => $errorMessage, 'logged_in' => checkLogin()]);
+    }
 });
+
 
 
 
@@ -294,14 +310,26 @@ SimpleRouter::post('/edit-anuncio/{id}', function($id) use ($twig, $pdo) {
     $assunto = $_POST['assunto'] ?? '';
     $descricao = $_POST['descricao'] ?? '';
     $preco = $_POST['preco'] ?? '';
-    
-    // Verifica se uma nova imagem foi enviada e a lê
-    $imagem = null;
+
+    // Recupera a imagem atual do banco de dados
+    $stmt = $pdo->prepare('SELECT imagem FROM recycle.tb_anuncios WHERE id = :id AND user_id = :user_id');
+    $stmt->execute([
+        'id' => $id,
+        'user_id' => $_SESSION['user_id']
+    ]);
+    $anuncio = $stmt->fetch(PDO::FETCH_ASSOC);
+    $imagem_atual = $anuncio['imagem'] ?? null;
+
+    // Verifica se uma nova imagem foi enviada
     if (isset($_FILES['imagem']) && $_FILES['imagem']['tmp_name']) {
+        // Lê a nova imagem e atualiza o banco de dados
         $imagem = file_get_contents($_FILES['imagem']['tmp_name']);
-        // Aqui você pode verificar o tipo e o conteúdo da imagem, se necessário
+    } else {
+        // Mantém a imagem atual se nenhum novo arquivo foi enviado
+        $imagem = $imagem_atual;
     }
 
+    // Atualiza o anúncio no banco de dados
     $stmt = $pdo->prepare('UPDATE recycle.tb_anuncios SET assunto = :assunto, descricao = :descricao, preco = :preco, imagem = :imagem WHERE id = :id AND user_id = :user_id');
     $stmt->execute([
         'assunto' => $assunto,
@@ -317,6 +345,8 @@ SimpleRouter::post('/edit-anuncio/{id}', function($id) use ($twig, $pdo) {
     header('Location: /meus-anuncios');
     exit;
 });
+
+
 
 SimpleRouter::get('/delete-anuncio/{id}', function($id) use ($pdo) {
     if (!checkLogin()) {
